@@ -1,14 +1,22 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:vender_app_flutter/screens/auth_screen.dart';
-import 'package:vender_app_flutter/screens/home_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:vender_app_flutter/providers/auth_provider.dart';
+
+import './screens/home_screen.dart';
+import './screens/register_screen.dart';
 
 import './screens/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(MyApp());
+  runApp(MultiProvider(
+    providers: [
+      Provider(create: (_) => AuthProvider()),
+    ],
+    child: MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -22,7 +30,7 @@ class MyApp extends StatelessWidget {
       initialRoute: SplashScreen.routeName,
       routes: {
         SplashScreen.routeName: (ctx) => SplashScreen(),
-        AuthScreen.routeName: (ctx) => AuthScreen(),
+        RegisterScreen.routeName: (ctx) => RegisterScreen(),
         HomeScreen.routeName: (ctx) => HomeScreen(),
       },
     );
