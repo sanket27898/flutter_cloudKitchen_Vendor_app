@@ -247,13 +247,13 @@ class _RegisterFormState extends State<RegisterForm> {
                             content: Text('Processing Data'),
                           ),
                         );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('shop profile pic need to br added'),
-                          ),
-                        );
                       }
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('shop profile pic need to br added'),
+                        ),
+                      );
                     }
                   },
                   child: Text(

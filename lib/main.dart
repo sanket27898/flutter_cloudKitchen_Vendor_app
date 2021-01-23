@@ -13,7 +13,7 @@ void main() async {
   await Firebase.initializeApp();
   runApp(MultiProvider(
     providers: [
-      Provider(create: (_) => AuthProvider()),
+      ChangeNotifierProvider(create: (_) => AuthProvider()),
     ],
     child: MyApp(),
   ));
