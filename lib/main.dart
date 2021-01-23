@@ -9,11 +9,13 @@ import './screens/register_screen.dart';
 import './screens/splash_screen.dart';
 
 void main() async {
+  Provider.debugCheckInvalidValueType = null;
+
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(MultiProvider(
     providers: [
-      ChangeNotifierProvider(create: (_) => AuthProvider()),
+      Provider(create: (_) => AuthProvider()),
     ],
     child: MyApp(),
   ));

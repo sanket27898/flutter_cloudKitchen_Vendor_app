@@ -1,5 +1,8 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:image_picker/image_picker.dart';
@@ -9,14 +12,19 @@ class AuthProvider extends ChangeNotifier {
   File image;
   bool isPicAvail = false;
   String pickerError = '';
+  String error = '';
+
+  //shop data
   double shopLatitude;
   double shopLongitude;
   String shopAddress;
   String placeName;
+  String email;
 
   Future<File> getImage() async {
     final picker = ImagePicker();
-    final pickedFile = await picker.getImage(source: ImageSource.gallery);
+    final pickedFile =
+        await picker.getImage(source: ImageSource.gallery, imageQuality: 20);
 
     if (pickedFile != null) {
       this.image = File(pickedFile.path);
@@ -66,5 +74,56 @@ class AuthProvider extends ChangeNotifier {
     this.placeName = shopAddress.featureName;
     notifyListeners();
     return shopAddress;
+  }
+
+  // register vender using email
+
+  Future<UserCredential> registerVendor(email, password) async {
+    this.email = email;
+    notifyListeners();
+    UserCredential userCredential;
+    try {
+      userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(email: email, password: password);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        this.error = 'The password provided is too weak.';
+        notifyListeners();
+        print('The password provided is too weak.');
+      } else if (e.code == 'email-already-in-use') {
+        this.error = 'The account already exists for that email.';
+        notifyListeners();
+        print('The account already exists for that email.');
+      }
+    } catch (e) {
+      this.error = e.toString();
+      notifyListeners();
+      print(e);
+    }
+    return userCredential;
+  }
+
+//save vendor data to firestore
+
+  Future<void> savevendorDataToDb(
+      {String url, String shopName, String mobile, String dialog}) {
+    User user = FirebaseAuth.instance.currentUser;
+    DocumentReference _vendors =
+        FirebaseFirestore.instance.collection('vendors').doc(user.uid);
+    _vendors.set({
+      'uid': user.uid,
+      'shopName': shopName,
+      'mobile': mobile,
+      'email': this.email,
+      'dialog': dialog,
+      'address': '${this.placeName}:${this.shopAddress}',
+      'location': GeoPoint(this.shopLatitude, this.shopLongitude),
+      'shopOpen': true, //will use later
+      'rating': 0.00, //later
+      'totalRating': 0, //later
+      'isTopPicked': true,
+      'imageUrl': url, //later
+    });
+    return null;
   }
 }
