@@ -103,6 +103,46 @@ class AuthProvider extends ChangeNotifier {
     return userCredential;
   }
 
+  //login
+
+  Future<UserCredential> loginVendor(email, password) async {
+    this.email = email;
+    notifyListeners();
+    UserCredential userCredential;
+    try {
+      userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+    } on FirebaseAuthException catch (e) {
+      this.error = e.code;
+      notifyListeners();
+    } catch (e) {
+      this.error = e.code;
+      notifyListeners();
+      print(e);
+    }
+    return userCredential;
+  }
+
+  //reset password
+  Future<void> resetPassword(email) async {
+    this.email = email;
+    notifyListeners();
+    UserCredential userCredential;
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+    } on FirebaseAuthException catch (e) {
+      this.error = e.code;
+      notifyListeners();
+    } catch (e) {
+      this.error = e.code;
+      notifyListeners();
+      print(e);
+    }
+    return userCredential;
+  }
+
 //save vendor data to firestore
 
   Future<void> savevendorDataToDb(
@@ -123,6 +163,7 @@ class AuthProvider extends ChangeNotifier {
       'totalRating': 0, //later
       'isTopPicked': true,
       'imageUrl': url, //later
+      'accVerified': true, // only verified vender can sell their product
     });
     return null;
   }

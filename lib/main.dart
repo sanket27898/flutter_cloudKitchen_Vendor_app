@@ -1,12 +1,15 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:vender_app_flutter/providers/auth_provider.dart';
 
-import './screens/home_screen.dart';
-import './screens/register_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:provider/provider.dart';
+import 'package:vender_app_flutter/widgets/reset_password_screen.dart';
+
+import './providers/auth_provider.dart';
 
 import './screens/splash_screen.dart';
+import './screens/register_screen.dart';
+import './screens/login_screen.dart';
+import './screens/home_screen.dart';
 
 void main() async {
   Provider.debugCheckInvalidValueType = null;
@@ -34,6 +37,8 @@ class MyApp extends StatelessWidget {
         SplashScreen.routeName: (ctx) => SplashScreen(),
         RegisterScreen.routeName: (ctx) => RegisterScreen(),
         HomeScreen.routeName: (ctx) => HomeScreen(),
+        LoginScreen.routeName: (ctx) => LoginScreen(),
+        ResetPassword.routeName: (ctx) => ResetPassword(),
       },
     );
   }
