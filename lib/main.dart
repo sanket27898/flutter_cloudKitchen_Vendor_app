@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+import 'package:vender_app_flutter/screens/add_newproduct_screen.dart';
 import 'package:vender_app_flutter/widgets/reset_password_screen.dart';
 
 import './providers/auth_provider.dart';
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
         HomeScreen.routeName: (ctx) => HomeScreen(),
         LoginScreen.routeName: (ctx) => LoginScreen(),
         ResetPassword.routeName: (ctx) => ResetPassword(),
+        AddNewProduct.routeName: (ctx) => AddNewProduct(),
       },
     );
   }

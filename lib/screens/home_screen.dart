@@ -1,23 +1,54 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:vender_app_flutter/screens/login_screen.dart';
+import 'package:flutter_slider_drawer/flutter_slider_drawer.dart';
+import 'package:vender_app_flutter/screens/dashboard_screen.dart';
+import 'package:vender_app_flutter/services/drawer_services.dart';
 
-class HomeScreen extends StatelessWidget {
+import '../widgets/drawer_menu_widget.dart';
+
+class HomeScreen extends StatefulWidget {
   static const String routeName = '/home_screen';
 
   @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  DrawerServices _services = DrawerServices();
+  GlobalKey<SliderMenuContainerState> _key =
+      new GlobalKey<SliderMenuContainerState>();
+  String title;
+
+  @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Scaffold(
-        body: Center(
-            child: RaisedButton(
-          onPressed: () {
-            FirebaseAuth.instance.signOut();
-            Navigator.pushReplacementNamed(context, LoginScreen.routeName);
-          },
-          child: Text('Log out'),
-        )),
-      ),
+    return Scaffold(
+      body: SliderMenuContainer(
+          appBarColor: Colors.white,
+          appBarHeight: 80,
+          key: _key,
+          sliderMenuOpenSize: 250,
+          title: Text(''),
+          trailing: Row(
+            children: [
+              IconButton(
+                icon: Icon(CupertinoIcons.search),
+                onPressed: () {},
+              ),
+              IconButton(
+                icon: Icon(CupertinoIcons.bell),
+                onPressed: () {},
+              ),
+            ],
+          ),
+          sliderMenu: MenuWidget(
+            onItemClick: (title) {
+              _key.currentState.closeDrawer();
+              setState(() {
+                this.title = title;
+              });
+            },
+          ),
+          sliderMain: _services.drawerScreen(title)),
     );
   }
 }
