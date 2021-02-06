@@ -54,9 +54,9 @@ class _MenuWidgetState extends State<MenuWidget> {
                     backgroundColor: Colors.grey,
                     child: CircleAvatar(
                       radius: 30,
-                      backgroundImage: NetworkImage(vendorData != null
-                          ? vendorData.data()['imageUrl']
-                          : null),
+                      backgroundImage: vendorData != null
+                          ? NetworkImage(vendorData.data()['imageUrl'])
+                          : null,
                     ),
                   ),
                   SizedBox(

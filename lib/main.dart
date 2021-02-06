@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
+import 'package:vender_app_flutter/providers/product_provider.dart';
 import 'package:vender_app_flutter/screens/add_newproduct_screen.dart';
 import 'package:vender_app_flutter/widgets/reset_password_screen.dart';
 
@@ -20,6 +21,7 @@ void main() async {
   runApp(MultiProvider(
     providers: [
       Provider(create: (_) => AuthProvider()),
+      Provider(create: (_) => ProductProvider()),
     ],
     child: MyApp(),
   ));
