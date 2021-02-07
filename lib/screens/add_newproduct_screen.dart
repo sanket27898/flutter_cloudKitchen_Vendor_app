@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 import '../providers/product_provider.dart';
 import '../widgets/category_list.dart';
@@ -24,15 +25,29 @@ class _AddNewProductState extends State<AddNewProduct> {
 
   var _categoryTextController = TextEditingController();
   var _subCategoryTextController = TextEditingController();
+  var _comparedPriceTextController = TextEditingController();
+  var _brandTextController = TextEditingController();
+  var _lowStockTextController = TextEditingController();
+  var _stockTextController = TextEditingController();
   File _image;
   bool _visible = false;
   bool _track = false;
+
+  String productName;
+  String description;
+  double price;
+  double comparedPrice;
+  String sku;
+  String weight;
+  double tax;
 
   @override
   Widget build(BuildContext context) {
     var _provider = Provider.of<ProductProvider>(context);
     return DefaultTabController(
       length: 2,
+      initialIndex:
+          1, // will keep index 1 to avoid textfield cleating automatically
       child: Scaffold(
         appBar: AppBar(),
         body: Form(
@@ -64,7 +79,75 @@ class _AddNewProductState extends State<AddNewProduct> {
                             color: Colors.white,
                           ),
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          if (_formkey.currentState.validate()) {
+                            //only if filled neccessary field
+                            if (_categoryTextController.text.isNotEmpty) {
+                              if (_subCategoryTextController.text.isNotEmpty) {
+                                if (_image != null) {
+                                  //image should be selected
+                                  //upload image to storage
+                                  EasyLoading.show(status: 'Saving...');
+                                  _provider
+                                      .uploadProductImage(
+                                          _image.path, productName)
+                                      .then((url) {
+                                    if (url != null) {
+                                      //upload product data to firestore
+                                      EasyLoading.dismiss();
+                                      _provider.saveProductDataToDb(
+                                        context: context,
+                                        comparedPrice: int.parse(
+                                            _comparedPriceTextController.text),
+                                        brand: _brandTextController.text,
+                                        collection: dropdownValue,
+                                        description: description,
+                                        lowStockQty: int.parse(
+                                            _lowStockTextController.text),
+                                        price: price,
+                                        sku: sku,
+                                        stockQty: int.parse(
+                                            _stockTextController.text),
+                                        weight: weight,
+                                        productName: productName,
+                                        tax: tax,
+                                      );
+
+                                      setState(() {
+                                        _formkey.currentState.reset();
+                                      });
+                                    } else {
+                                      //upload failed
+                                      _provider.alertDialog(
+                                        context: context,
+                                        title: 'IMAGE UPLOAD',
+                                        content:
+                                            'Failed to upload product image',
+                                      );
+                                    }
+                                  });
+                                } else {
+                                  //image not selected
+                                  _provider.alertDialog(
+                                    context: context,
+                                    title: 'PRODUCT IMAGE',
+                                    content: 'Product Image not selected',
+                                  );
+                                }
+                              } else {
+                                _provider.alertDialog(
+                                    context: context,
+                                    title: 'Sub Category',
+                                    content: 'Sub Category not selected');
+                              }
+                            } else {
+                              _provider.alertDialog(
+                                  context: context,
+                                  title: 'Main Category',
+                                  content: 'Main Category not selected');
+                            }
+                          }
+                        },
                       ),
                     ],
                   ),
@@ -95,6 +178,15 @@ class _AddNewProductState extends State<AddNewProduct> {
                             child: Column(
                               children: [
                                 TextFormField(
+                                  validator: (value) {
+                                    if (value.isEmpty) {
+                                      return 'Enter product name';
+                                    }
+                                    setState(() {
+                                      productName = value;
+                                    });
+                                    return null;
+                                  },
                                   decoration: InputDecoration(
                                     labelText: 'Product Name*',
                                     labelStyle: TextStyle(color: Colors.grey),
@@ -106,6 +198,18 @@ class _AddNewProductState extends State<AddNewProduct> {
                                   ),
                                 ),
                                 TextFormField(
+                                  keyboardType: TextInputType.multiline,
+                                  maxLines: 5,
+                                  maxLength: 500,
+                                  validator: (value) {
+                                    if (value.isEmpty) {
+                                      return 'Enter Description';
+                                    }
+                                    setState(() {
+                                      description = value;
+                                    });
+                                    return null;
+                                  },
                                   decoration: InputDecoration(
                                     labelText: 'About Product*',
                                     labelStyle: TextStyle(color: Colors.grey),
@@ -140,6 +244,15 @@ class _AddNewProductState extends State<AddNewProduct> {
                                   ),
                                 ),
                                 TextFormField(
+                                  validator: (value) {
+                                    if (value.isEmpty) {
+                                      return 'Enter Selling Price';
+                                    }
+                                    setState(() {
+                                      price = double.parse(value);
+                                    });
+                                    return null;
+                                  },
                                   keyboardType: TextInputType.number,
                                   decoration: InputDecoration(
                                     labelText: 'Price*', //final selling price
@@ -152,6 +265,16 @@ class _AddNewProductState extends State<AddNewProduct> {
                                   ),
                                 ),
                                 TextFormField(
+                                  controller: _comparedPriceTextController,
+                                  validator: (value) {
+                                    //not compulsory
+                                    if (price > double.parse(value)) {
+                                      //always compared priced should be higher
+                                      return 'Compared price should be higher than price';
+                                    }
+
+                                    return null;
+                                  },
                                   keyboardType: TextInputType.number,
                                   decoration: InputDecoration(
                                     labelText:
@@ -198,7 +321,8 @@ class _AddNewProductState extends State<AddNewProduct> {
                                   ),
                                 ),
                                 TextFormField(
-                                  keyboardType: TextInputType.number,
+                                  controller: _brandTextController,
+                                  //not compulsary
                                   decoration: InputDecoration(
                                     labelText: 'Brand',
                                     labelStyle: TextStyle(color: Colors.grey),
@@ -210,7 +334,15 @@ class _AddNewProductState extends State<AddNewProduct> {
                                   ),
                                 ),
                                 TextFormField(
-                                  keyboardType: TextInputType.number,
+                                  validator: (value) {
+                                    if (value.isEmpty) {
+                                      return 'Enter SKU';
+                                    }
+                                    setState(() {
+                                      sku = value;
+                                    });
+                                    return null;
+                                  },
                                   decoration: InputDecoration(
                                     labelText: 'SKU', //item code
                                     labelStyle: TextStyle(color: Colors.grey),
@@ -237,16 +369,25 @@ class _AddNewProductState extends State<AddNewProduct> {
                                         width: 10,
                                       ),
                                       Expanded(
-                                        child: TextFormField(
-                                          controller: _categoryTextController,
-                                          keyboardType: TextInputType.number,
-                                          decoration: InputDecoration(
-                                            hintText: 'not selected',
-                                            hintStyle:
-                                                TextStyle(color: Colors.grey),
-                                            enabledBorder: UnderlineInputBorder(
-                                              borderSide: BorderSide(
-                                                color: Colors.grey[300],
+                                        child: AbsorbPointer(
+                                          absorbing: true,
+                                          child: TextFormField(
+                                            validator: (value) {
+                                              if (value.isEmpty) {
+                                                return 'Select Category';
+                                              }
+                                              return null;
+                                            },
+                                            controller: _categoryTextController,
+                                            decoration: InputDecoration(
+                                              hintText: 'not selected',
+                                              hintStyle:
+                                                  TextStyle(color: Colors.grey),
+                                              enabledBorder:
+                                                  UnderlineInputBorder(
+                                                borderSide: BorderSide(
+                                                  color: Colors.grey[300],
+                                                ),
                                               ),
                                             ),
                                           ),
@@ -289,18 +430,25 @@ class _AddNewProductState extends State<AddNewProduct> {
                                           width: 10,
                                         ),
                                         Expanded(
-                                          child: TextFormField(
-                                            controller:
-                                                _subCategoryTextController,
-                                            keyboardType: TextInputType.number,
-                                            decoration: InputDecoration(
-                                              hintText: 'not selected',
-                                              hintStyle:
-                                                  TextStyle(color: Colors.grey),
-                                              enabledBorder:
-                                                  UnderlineInputBorder(
-                                                borderSide: BorderSide(
-                                                  color: Colors.grey[300],
+                                          child: AbsorbPointer(
+                                            child: TextFormField(
+                                              controller:
+                                                  _subCategoryTextController,
+                                              validator: (value) {
+                                                if (value.isEmpty) {
+                                                  return 'Select Subcategory';
+                                                }
+                                                return null;
+                                              },
+                                              decoration: InputDecoration(
+                                                hintText: 'not selected',
+                                                hintStyle: TextStyle(
+                                                    color: Colors.grey),
+                                                enabledBorder:
+                                                    UnderlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                    color: Colors.grey[300],
+                                                  ),
                                                 ),
                                               ),
                                             ),
@@ -329,6 +477,15 @@ class _AddNewProductState extends State<AddNewProduct> {
                                   ),
                                 ),
                                 TextFormField(
+                                  validator: (value) {
+                                    if (value.isEmpty) {
+                                      return 'Enter weight';
+                                    }
+                                    setState(() {
+                                      weight = value;
+                                    });
+                                    return null;
+                                  },
                                   keyboardType: TextInputType.number,
                                   decoration: InputDecoration(
                                     labelText: 'Weight.  eg:- Kg, gm , etc.',
@@ -341,6 +498,15 @@ class _AddNewProductState extends State<AddNewProduct> {
                                   ),
                                 ),
                                 TextFormField(
+                                  validator: (value) {
+                                    if (value.isEmpty) {
+                                      return 'Enter tax %';
+                                    }
+                                    setState(() {
+                                      tax = double.parse(value);
+                                    });
+                                    return null;
+                                  },
                                   keyboardType: TextInputType.number,
                                   decoration: InputDecoration(
                                     labelText: 'Tax %',
@@ -389,6 +555,7 @@ class _AddNewProductState extends State<AddNewProduct> {
                                     child: Column(
                                       children: [
                                         TextFormField(
+                                          controller: _stockTextController,
                                           keyboardType: TextInputType.number,
                                           decoration: InputDecoration(
                                             labelText: 'Inventory Quantity*',
@@ -402,6 +569,8 @@ class _AddNewProductState extends State<AddNewProduct> {
                                           ),
                                         ),
                                         TextFormField(
+                                          // not compulsory
+                                          controller: _lowStockTextController,
                                           keyboardType: TextInputType.number,
                                           decoration: InputDecoration(
                                             labelText:

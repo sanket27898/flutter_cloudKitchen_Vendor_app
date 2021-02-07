@@ -161,9 +161,12 @@ class AuthProvider extends ChangeNotifier {
       'shopOpen': true, //will use later
       'rating': 0.00, //later
       'totalRating': 0, //later
-      'isTopPicked': true,
+      //keep initial value as false
+      'isTopPicked': false,
       'imageUrl': url, //later
-      'accVerified': true, // only verified vender can sell their product
+      // only verified vender can sell their product
+      //keep initial value as false
+      'accVerified': false,
     });
     return null;
   }
