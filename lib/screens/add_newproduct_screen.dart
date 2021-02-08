@@ -115,6 +115,17 @@ class _AddNewProductState extends State<AddNewProduct> {
 
                                       setState(() {
                                         _formkey.currentState.reset();
+                                        _comparedPriceTextController.clear();
+                                        dropdownValue = null;
+                                        _subCategoryTextController.clear();
+                                        _categoryTextController.clear();
+                                        _brandTextController.clear();
+                                        _collection.clear();
+                                        _track = false;
+                                        _image = null;
+                                        _visible = false;
+                                        _lowStockTextController.clear();
+                                        _stockTextController.clear();
                                       });
                                     } else {
                                       //upload failed

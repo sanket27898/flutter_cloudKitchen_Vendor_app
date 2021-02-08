@@ -108,7 +108,7 @@ class ProductProvider with ChangeNotifier {
     context,
   }) {
     var timeStamp =
-        DateTime.now().millisecondsSinceEpoch; //this will use as product id
+        DateTime.now().microsecondsSinceEpoch; //this will use as product id
     User user = FirebaseAuth.instance.currentUser;
     CollectionReference _product =
         FirebaseFirestore.instance.collection('products');
@@ -131,7 +131,7 @@ class ProductProvider with ChangeNotifier {
         'stockQty': stockQty,
         'lowStockQty': lowStockQty,
         'published': false, //keep initial value as false
-        'productId': timeStamp,
+        'productId': timeStamp.toString(),
         'productImage': this.productUrl,
       });
       this.alertDialog(
