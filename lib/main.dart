@@ -16,11 +16,12 @@ import './screens/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  Provider.debugCheckInvalidValueType = null;
   await Firebase.initializeApp();
   runApp(MultiProvider(
     providers: [
-      ChangeNotifierProvider(create: (_) => AuthProvider()),
-      ChangeNotifierProvider(create: (_) => ProductProvider()),
+      Provider(create: (_) => AuthProvider()),
+      Provider(create: (_) => ProductProvider()),
     ],
     child: MyApp(),
   ));

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slider_drawer/flutter_slider_drawer.dart';
-import 'package:vender_app_flutter/screens/dashboard_screen.dart';
+
 import 'package:vender_app_flutter/services/drawer_services.dart';
 
 import '../widgets/drawer_menu_widget.dart';

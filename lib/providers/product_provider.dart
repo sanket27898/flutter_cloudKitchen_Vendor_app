@@ -8,13 +8,13 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 class ProductProvider with ChangeNotifier {
-  String selectedCategory = 'not selected';
-  String selectedSubCategory = 'not selected';
-  String categoryImage = '';
+  String selectedCategory;
+  String selectedSubCategory;
+  String categoryImage;
   File image;
-  String pickerError = '';
-  String shopName = ''; // we need to bring shop name here
-  String productUrl = '';
+  String pickerError;
+  String shopName; // we need to bring shop name here
+  String productUrl;
 
   selectCategory(mainCategory, categoryImage) {
     this.selectedCategory = mainCategory;
@@ -31,6 +31,17 @@ class ProductProvider with ChangeNotifier {
     this.shopName = shopName;
     notifyListeners();
   }
+
+  resetProvider() {
+    // remove all the exiting data before update next product
+    this.selectedCategory = null;
+    this.selectedSubCategory = null;
+    this.categoryImage = null;
+    this.image = null;
+    this.productUrl = null;
+    notifyListeners();
+  }
+
   //upload product image
 
   Future<String> uploadProductImage(filePath, productName) async {
@@ -116,6 +127,7 @@ class ProductProvider with ChangeNotifier {
       _product.doc(timeStamp.toString()).set({
         'seller': {'shopName': this.shopName, 'sellerUid': user.uid},
         'productName': productName,
+        'description': description,
         'price': price,
         'comparedPrice': comparedPrice,
         'collection': collection,
@@ -146,5 +158,65 @@ class ProductProvider with ChangeNotifier {
         content: '${e.toString()}',
       );
     }
+    return null;
+  }
+
+  Future<void> updateProduct(
+      //need to bring details from Add Product screen
+      {
+    productName,
+    description,
+    price,
+    comparedPrice,
+    collection,
+    brand,
+    sku,
+    weight,
+    tax,
+    stockQty,
+    lowStockQty,
+    context,
+    productId,
+    image,
+    category,
+    subCategory,
+    categoryImage,
+  }) {
+    CollectionReference _product =
+        FirebaseFirestore.instance.collection('products');
+    try {
+      _product.doc(productId).update({
+        'productName': productName,
+        'description': description,
+        'price': price,
+        'comparedPrice': comparedPrice,
+        'collection': collection,
+        'brand': brand,
+        'sku': sku,
+        'category': {
+          'mainCategory': category,
+          'subCategory': subCategory,
+          'categoryImage':
+              this.categoryImage == null ? categoryImage : this.categoryImage,
+        },
+        'weight': weight,
+        'tax': tax,
+        'stockQty': stockQty,
+        'lowStockQty': lowStockQty,
+        'productImage': this.productUrl == null ? image : this.productUrl,
+      });
+      this.alertDialog(
+        context: context,
+        title: 'SAVE DATA',
+        content: 'Product Details saved Successfully',
+      );
+    } catch (e) {
+      this.alertDialog(
+        context: context,
+        title: 'Failed to SAVE DATA',
+        content: '${e.toString()}',
+      );
+    }
+    return null;
   }
 }

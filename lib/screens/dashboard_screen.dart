@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_slider_drawer/flutter_slider_drawer.dart';
-import '../screens/home_screen.dart';
-import '../widgets/drawer_menu_widget.dart';
 
 class MainScreen extends StatefulWidget {
   @override

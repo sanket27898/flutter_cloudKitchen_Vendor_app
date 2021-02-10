@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:vender_app_flutter/screens/edit_view_product.dart';
 import '../services/firebase_services.dart';
 
 class UnPublishedProducts extends StatelessWidget {
@@ -20,16 +21,19 @@ class UnPublishedProducts extends StatelessWidget {
             );
           }
           return SingleChildScrollView(
-            child: DataTable(
-              showBottomBorder: true,
-              dataRowHeight: 70,
-              headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
-              columns: [
-                DataColumn(label: Expanded(child: Text('Product Name'))),
-                DataColumn(label: Text('Image')),
-                DataColumn(label: Text('Action')),
-              ],
-              rows: _productDetails(snapshot.data),
+            child: FittedBox(
+              child: DataTable(
+                showBottomBorder: true,
+                dataRowHeight: 70,
+                headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
+                columns: [
+                  DataColumn(label: Expanded(child: Text('Product Name'))),
+                  DataColumn(label: Text('Image')),
+                  DataColumn(label: Text('Info')),
+                  DataColumn(label: Text('Action')),
+                ],
+                rows: _productDetails(snapshot.data, context),
+              ),
             ),
           );
         },
@@ -37,7 +41,7 @@ class UnPublishedProducts extends StatelessWidget {
     );
   }
 
-  List<DataRow> _productDetails(QuerySnapshot snapshot) {
+  List<DataRow> _productDetails(QuerySnapshot snapshot, context) {
     List<DataRow> newList = snapshot.docs.map((DocumentSnapshot document) {
       if (document != null) {
         return DataRow(cells: [
@@ -46,25 +50,20 @@ class UnPublishedProducts extends StatelessWidget {
               child: ListTile(
                 contentPadding: EdgeInsets.zero,
                 title: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                      child: Text(
-                        'Name : ',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
-                        ),
+                    Text(
+                      'Name : ',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
                       ),
                     ),
-                    Expanded(
-                      child: Text(
-                        document.data()['productName'],
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
-                        ),
+                    Text(
+                      document.data()['productName'],
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
                       ),
                     ),
                   ],
@@ -95,17 +94,30 @@ class UnPublishedProducts extends StatelessWidget {
           ),
           DataCell(
             Container(
-              height: 50,
-              width: 60,
               child: Padding(
                 padding: const EdgeInsets.all(3.0),
                 child: Image.network(
                   document.data()['productImage'],
+                  width: 50,
+                  height: 60,
                   fit: BoxFit.cover,
                 ),
               ),
             ),
           ),
+          DataCell(IconButton(
+            icon: Icon(Icons.info_outline),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => EditViewProduct(
+                    productId: document.data()['productId'],
+                  ),
+                ),
+              );
+            },
+          )),
           DataCell(
             popUpButton(document.data()),
           ),
@@ -134,20 +146,6 @@ class UnPublishedProducts extends StatelessWidget {
                 child: ListTile(
                   leading: Icon(Icons.check),
                   title: Text('Publish'),
-                ),
-              ),
-              const PopupMenuItem(
-                value: 'preview',
-                child: ListTile(
-                  leading: Icon(Icons.info_outline),
-                  title: Text('Preview'),
-                ),
-              ),
-              const PopupMenuItem(
-                value: 'edit',
-                child: ListTile(
-                  leading: Icon(Icons.edit_outlined),
-                  title: Text('Edit Product'),
                 ),
               ),
               const PopupMenuItem(
