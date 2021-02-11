@@ -89,7 +89,6 @@ class _EditViewProductState extends State<EditViewProduct> {
   @override
   Widget build(BuildContext context) {
     var _provider = Provider.of<ProductProvider>(context);
-    _provider.resetProvider();
 
     return Scaffold(
       appBar: AppBar(
@@ -155,7 +154,6 @@ class _EditViewProductState extends State<EditViewProduct> {
                                 _image.path, _productNameText.text)
                             .then((url) {
                           if (url != null) {
-                            EasyLoading.dismiss();
                             _provider.updateProduct(
                               context: context,
                               productName: _productNameText.text,
@@ -176,6 +174,7 @@ class _EditViewProductState extends State<EditViewProduct> {
                               subCategory: _subCategoryTextController.text,
                               categoryImage: categoryImage,
                             );
+                            EasyLoading.dismiss();
                           }
                         });
                       } else {
@@ -202,6 +201,8 @@ class _EditViewProductState extends State<EditViewProduct> {
                         );
                         EasyLoading.dismiss();
                       }
+                      //reset only after Saving Completed
+                      _provider.resetProvider();
                     }
                   },
                   child: Container(

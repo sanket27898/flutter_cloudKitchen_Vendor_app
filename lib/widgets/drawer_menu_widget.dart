@@ -43,55 +43,58 @@ class _MenuWidgetState extends State<MenuWidget> {
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.only(top: 30),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: <Widget>[
-          SizedBox(
-            height: 4,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: FittedBox(
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    radius: 32,
-                    backgroundColor: Colors.grey,
-                    child: CircleAvatar(
-                      radius: 30,
-                      backgroundImage: vendorData != null
-                          ? NetworkImage(vendorData.data()['imageUrl'])
-                          : null,
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            SizedBox(
+              height: 4,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: FittedBox(
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      radius: 32,
+                      backgroundColor: Colors.grey,
+                      child: CircleAvatar(
+                        radius: 30,
+                        backgroundImage: vendorData != null
+                            ? NetworkImage(vendorData.data()['imageUrl'])
+                            : null,
+                      ),
                     ),
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Text(
-                    vendorData != null
-                        ? vendorData.data()['shopName']
-                        : 'Shop Name', // will display shop name here later
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 25,
+                    SizedBox(
+                      width: 10,
                     ),
-                  ),
-                ],
+                    Text(
+                      vendorData != null
+                          ? vendorData.data()['shopName']
+                          : 'Shop Name', // will display shop name here later
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 25,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          sliderItem('DashBoard', Icons.dashboard_outlined),
-          sliderItem('Product', Icons.shopping_bag_outlined),
-          sliderItem('Coupons', CupertinoIcons.gift),
-          sliderItem('Order', Icons.list_alt_outlined),
-          sliderItem('reports', Icons.stacked_line_chart_outlined),
-          sliderItem('Setting', Icons.settings_outlined),
-          sliderItem('LogOut', Icons.arrow_back_ios)
-        ],
+            SizedBox(
+              height: 10,
+            ),
+            sliderItem('DashBoard', Icons.dashboard_outlined),
+            sliderItem('Product', Icons.shopping_bag_outlined),
+            sliderItem('Banner', CupertinoIcons.photo),
+            sliderItem('Coupons', CupertinoIcons.gift),
+            sliderItem('Order', Icons.list_alt_outlined),
+            sliderItem('reports', Icons.stacked_line_chart_outlined),
+            sliderItem('Setting', Icons.settings_outlined),
+            sliderItem('LogOut', Icons.arrow_back_ios)
+          ],
+        ),
       ),
     );
   }

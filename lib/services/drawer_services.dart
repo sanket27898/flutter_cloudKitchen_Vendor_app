@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:vender_app_flutter/screens/dashboard_screen.dart';
-import 'package:vender_app_flutter/screens/product_screen.dart';
+import '../screens/banner_screen.dart';
+import '../screens/dashboard_screen.dart';
+import '../screens/product_screen.dart';
 
 class DrawerServices {
   Widget drawerScreen(title) {
@@ -9,6 +10,9 @@ class DrawerServices {
     }
     if (title == 'Product') {
       return ProductScreen();
+    }
+    if (title == 'Banner') {
+      return BannerScreen();
     }
     return MainScreen();
   }
